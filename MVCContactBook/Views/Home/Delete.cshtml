@@ -1,0 +1,24 @@
+﻿@model MVCContactBook.Contact
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<hr />
+@* Here I will use the partial view what we have created for show view details  *@
+
+@Html.Partial("_ContactDetails",Model)
+
+<div class="col-sm-6">
+    @using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+        @Html.HiddenFor(a=>a.ContactID)
+    <div style="margin:10px 0">
+        <input type="submit" value="Delete" class="btn btn-danger" />
+    </div>
+}
+</div>
+

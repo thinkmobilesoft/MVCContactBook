@@ -1,0 +1,131 @@
+﻿@model MVCContactBook.Contact
+
+@{
+    ViewBag.Title = "Add Contact";
+}
+
+<h2>Add</h2>
+
+@using (Html.BeginForm("Add", "Home", FormMethod.Post, new { @class="form-horizontal", enctype="multipart/form-data"} ))
+{
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()     //we need this for prevent CSRF Attack
+
+    //Here I will customize the form for good looks and support bootstrap responsive view (not mandatory)   
+    
+        <div class="form-group">
+            @Html.LabelFor(model => model.ContactPersonFname, new { @class="col-md-2 control-label"})
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.ContactPersonFname, new { @class="form-control", placeholder="Enter first name"})
+                @Html.ValidationMessageFor(model => model.ContactPersonFname)
+            </div>
+        </div>
+        
+     //Same Way We will do all
+        <div class="form-group">
+            @Html.LabelFor(model => model.ContactPersonLname, new { @class="col-md-2 control-label"})
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.ContactPersonLname, new { @class="form-control", placeholder="Enter last name"})
+                @Html.ValidationMessageFor(model => model.ContactPersonLname)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ContactNo1, new { @class="col-md-2 control-label"})
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.ContactNo1, new { @class="form-control", placeholder="Enter Contact No1"})
+                @Html.ValidationMessageFor(model => model.ContactNo1)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.ContactNo2, new { @class="col-md-2 control-label"})
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.ContactNo2, new { @class="form-control", placeholder="Enter Contact No2"})
+                @Html.ValidationMessageFor(model => model.ContactNo2)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmailID, new { @class="col-md-2 control-label"})
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.EmailID, new { @class="form-control", placeholder="Enter Email ID"})
+                @Html.ValidationMessageFor(model => model.EmailID)
+            </div>
+        </div>        
+        <div class="form-group">
+            @Html.LabelFor(model => model.CountryID, new { @class="col-md-2 control-label"})
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.CountryID, @ViewBag.Country as SelectList,"Select Country", new { @class="form-control"})
+                @Html.ValidationMessageFor(model => model.CountryID)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.StateID, new { @class="col-md-2 control-label"})
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.StateID, @ViewBag.State as SelectList,"Select State", new { @class="form-control"})
+                @Html.ValidationMessageFor(model => model.StateID)
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Address, new { @class="col-md-2 control-label"})
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Address,3,5, new { @class="form-control", placeholder="Enter Address"})
+                @Html.ValidationMessageFor(model => model.Address)
+            </div>
+        </div>        
+        // Here Have to do for File 
+        <div class="form-group">
+            <label class="col-md-2 control-label">Select File : </label>
+            <div class="col-md-10">
+                @Html.TextBox("file", null, new { type="file", @class="form-control", placeholder="Enter Address", accept = "image/x-png, image/gif, image/jpeg"})
+                @Html.ValidationMessage("FileErrorMessage")
+            </div>            
+        </div>         
+        
+       <div class="form-group">
+           <div class="col-md-10 col-md-offset-2">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </div>
+
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        //here we will fetch states for the selected country
+        $(document).ready(function () {
+            $('#CountryID').change(function () {
+                
+                var countryID = parseInt($(this).val());
+                
+                if (!isNaN(countryID)) {
+                    
+                    var $ddState = $('#StateID');
+                    $ddState.empty(); // Clear all Items 
+                    $ddState.append($("<option></option>").val('').html('Please Wait...'));
+
+                    $.ajax({
+                        url: '@Url.Action("GetStates","Home")',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {countryID : countryID},
+                        success: function (d) {
+                            $ddState.empty(); // Clear all Items 
+                            $ddState.append($("<option></option>").val('').html('Select State'));                            
+                            $.each(d, function (i, item) {                                
+                                $ddState.append($("<option></option>").val(item.StateID).html(item.StateName));
+                            });
+                        },
+                        error: function () {
+                            alert('Error!');
+                        }
+                    });
+                }
+
+            });
+        });
+    </script>
+}
